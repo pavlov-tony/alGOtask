@@ -1,0 +1,2 @@
+# alGOtask
+Algorithmic task
