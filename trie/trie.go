@@ -2,13 +2,16 @@ package trie
 
 import (
 	"strings"
-	"sync"
 )
 
 type TrieNode struct {
-	lock     sync.RWMutex
 	word     string
 	children map[string]*TrieNode
+}
+
+type resultSet struct {
+	word     string
+	distance int
 }
 
 func InitTrie() *TrieNode {
@@ -39,15 +42,16 @@ func (t *TrieNode) SearchDistance(word string, ch chan int) {
 	for k := range currentRow {
 		currentRow[k] = k
 	}
-	var results []int
+
+	results := &resultSet{distance: len(word)}
 
 	for letter, node := range t.children {
-		deepSearch(node, letter, word, currentRow, &results)
+		deepSearch(node, letter, word, currentRow, results)
 	}
-	ch <- minIntElement(results)
+	ch <- results.distance
 }
 
-func deepSearch(node *TrieNode, letter string, word string, previousRow []int, results *[]int) {
+func deepSearch(node *TrieNode, letter string, word string, previousRow []int, results *resultSet) {
 	currentRow := []int{previousRow[0] + 1}
 	cols := len(word) + 1
 	for i := 1; i < cols; i++ {
@@ -61,11 +65,18 @@ func deepSearch(node *TrieNode, letter string, word string, previousRow []int, r
 		insCost := currentRow[i-1] + 1
 		currentRow = append(currentRow, min(insCost, delCost, repCost))
 	}
-	if currentRow[len(currentRow)-1] <= len(word) && node.word != "" {
-		*results = append(*results, currentRow[len(currentRow)-1])
+
+	currentRowDistance := currentRow[len(currentRow)-1]
+
+	maxErrors := results.distance
+
+	if currentRowDistance <= maxErrors && node.word != "" {
+		if currentRowDistance < results.distance {
+			results.distance = currentRowDistance
+		}
 	}
 
-	if minIntElement(currentRow) <= len(word) {
+	if minIntElement(currentRow) <= maxErrors {
 		for l, n := range node.children {
 			deepSearch(n, l, word, currentRow, results)
 		}
@@ -86,6 +97,9 @@ func min(a, b, c int) int {
 }
 
 func minIntElement(s []int) int {
+	if len(s) == 0 {
+		return 0
+	}
 	answer := s[0]
 	for _, v := range s {
 		if v < answer {
