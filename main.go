@@ -1,45 +1,59 @@
 package main
 
 import (
-	//"bufio"
-	//"fmt"
-	//"math"
-	//"os"
-	//
-	//"strings"
-	//"sync"
-	//
-	//"github.com/arbovm/levenshtein"
 	"bufio"
-	"fmt"
-	"github.com/pavlov-tony/alGOtask/trie"
 	"os"
 	"strings"
+
+	//"time"
+
+	"errors"
+	"fmt"
+	"github.com/pavlov-tony/alGOtask/trie"
+	"io/ioutil"
+	"log"
 )
 
 func main() {
+	//start := time.Now()
 	vocabulary := trie.InitTrie()
 
 	file, err := os.Open("vocabulary.txt")
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		vocabulary.Insert(strings.ToLower(scanner.Text()))
 	}
 	if err := scanner.Err(); err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	file.Close()
 
-	sentence := "orem ipsum dolor sit amet consectetur adipiscing elit nteger imperdiet elit et libero commodo et convallis est ultrices raesent faucibus ligula ullamcorper urna pellentesque faucibus liquam ultrices purus sit amet tellus malesuada malesuada hasellus varius faucibus nisl congue placerat mi suscipit vitae ivamus eu lorem mauris a elementum erat nteger a nisl sollicitudin mauris facilisis vehicula quis non erat tiam sit amet porta justo usce eget nisl ipsum am a ante neque egestas rhoncus urna orbi lectus lorem vehicula quis commodo sed scelerisque non diam enean enim quam sollicitudin vel dignissim et feugiat in risus orbi gravida urna in neque sollicitudin elementum nteger ut tortor lacus sed aliquam ipsum usce convallis purus at lobortis accumsan magna odio blandit orci sit amet semper ligula tortor sit amet nisi ellentesque luctus nisi ut placerat dictum massa libero suscipit mi id ullamcorper purus arcu at nunc t ut arcu orci"
-	words := strings.Split(sentence, " ")
+	if len(os.Args) < 2 {
+		log.Fatal(errors.New("get command line args: The system cannot find the command line arg for input data file name."))
+	}
+
+	inputFileName := os.Args[1]
+
+	file, err = os.Open(inputFileName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	text, err := ioutil.ReadAll(file)
+	if err != nil {
+		log.Fatal(err)
+	}
+	file.Close()
+
+	words := strings.Split(string(text), " ")
 
 	ch := make(chan int)
 
 	for _, word := range words {
-		go vocabulary.SearchDistance(word, ch)
+		go vocabulary.SearchDistance(strings.TrimSpace(word), ch)
 	}
 
 	result := 0
@@ -49,4 +63,6 @@ func main() {
 	}
 
 	fmt.Println(result)
+	//elapsed := time.Since(start)
+	//log.Printf("Search distance took %s", elapsed)
 }
