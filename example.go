@@ -12,6 +12,7 @@ import (
 	"github.com/pavlov-tony/alGOtask/trie"
 	"io/ioutil"
 	"log"
+	"time"
 )
 
 func main() {
