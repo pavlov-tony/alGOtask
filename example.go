@@ -4,19 +4,19 @@ import (
 	"bufio"
 	"os"
 	"strings"
-
-	//"time"
+	"time"
 
 	"errors"
 	"fmt"
-	"github.com/pavlov-tony/alGOtask/trie"
 	"io/ioutil"
 	"log"
-	"time"
+
+	"github.com/pavlov-tony/alGOtask/search"
+	"github.com/pavlov-tony/alGOtask/trie"
 )
 
 func main() {
-	//start := time.Now()
+	start := time.Now()
 	vocabulary := trie.InitTrie()
 
 	file, err := os.Open("vocabulary.txt")
@@ -54,7 +54,7 @@ func main() {
 	ch := make(chan int)
 
 	for _, word := range words {
-		go vocabulary.SearchDistance(strings.TrimSpace(word), ch)
+		go search.SearchDistance(vocabulary, strings.TrimSpace(word), ch)
 	}
 
 	result := 0
@@ -64,6 +64,6 @@ func main() {
 	}
 
 	fmt.Println(result)
-	//elapsed := time.Since(start)
-	//log.Printf("Search distance took %s", elapsed)
+	elapsed := time.Since(start)
+	log.Printf("Search distance took %s", elapsed)
 }
