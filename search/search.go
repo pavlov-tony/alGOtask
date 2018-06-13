@@ -35,13 +35,13 @@ func deepSearch(node *trie.Node, letter string, word string, previousRow []int, 
 		currentRow = append(currentRow, min(insCost, delCost, repCost))
 	}
 	currentRowDistance := currentRow[len(currentRow)-1]
-	maxErrors := results.distance
-	if currentRowDistance <= maxErrors && node.GetWord() != "" {
+	maxChanges := results.distance
+	if currentRowDistance <= maxChanges && node.GetWord() != "" {
 		if currentRowDistance < results.distance {
 			results.distance = currentRowDistance
 		}
 	}
-	if minIntElement(currentRow) <= maxErrors {
+	if minIntElement(currentRow) <= maxChanges {
 		for l, n := range node.GetChildren() {
 			deepSearch(n, l, word, currentRow, results)
 		}
