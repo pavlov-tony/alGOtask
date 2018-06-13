@@ -17,7 +17,7 @@ import (
 
 func main() {
 	start := time.Now()
-	vocabulary := trie.InitTrie()
+	vocabulary := trie.Init()
 	vocabularyFile, err := os.Open("vocabulary.txt")
 	defer vocabularyFile.Close()
 	if err != nil {
@@ -46,7 +46,7 @@ func main() {
 	words := strings.Split(string(text), " ")
 	ch := make(chan int)
 	for _, word := range words {
-		go search.SearchDistance(vocabulary, strings.TrimSpace(word), ch)
+		go search.Distance(vocabulary, strings.TrimSpace(word), ch)
 	}
 	result := 0
 	for i := 0; i < len(words); i++ {
