@@ -31,7 +31,7 @@ func main() {
 		log.Println(err)
 	}
 	if len(os.Args) < 2 {
-		log.Fatal(errors.New("get command line args: The system cannot find the command line arg for input data file name"))
+		log.Fatal(errors.New("get command line args: the system cannot find the command line arg for input data file name"))
 	}
 	inputFileName := os.Args[1]
 	textFile, err := os.Open(inputFileName)
