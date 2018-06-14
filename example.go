@@ -25,7 +25,7 @@ func main() {
 	}
 	scanner := bufio.NewScanner(vocabularyFile)
 	for scanner.Scan() {
-		vocabulary.Insert(strings.ToLower(scanner.Text()))
+		vocabulary.Insert([]rune(strings.ToLower(scanner.Text())))
 	}
 	if err := scanner.Err(); err != nil {
 		log.Println(err)
@@ -46,7 +46,7 @@ func main() {
 	words := strings.Split(string(text), " ")
 	ch := make(chan int)
 	for _, word := range words {
-		go search.Distance(vocabulary, strings.TrimSpace(word), ch)
+		go search.Distance(vocabulary, []rune(word), ch)
 	}
 	result := 0
 	for i := 0; i < len(words); i++ {

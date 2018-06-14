@@ -1,13 +1,9 @@
 package trie
 
-import (
-	"strings"
-)
-
 // Node is an implementation of prefix tree.
 type Node struct {
-	word     string
-	children map[string]*Node
+	word     []rune
+	children map[rune]*Node
 }
 
 // Init returns pointer to the new Node.
@@ -16,19 +12,19 @@ func Init() *Node {
 }
 
 func newNode() *Node {
-	return &Node{children: make(map[string]*Node)}
+	return &Node{children: make(map[rune]*Node)}
 }
 
 // Insert populates trie data structure with the new word.
-func (t *Node) Insert(word string) {
+func (t *Node) Insert(word []rune) {
 	node := t
-	for _, letter := range strings.Split(word, "") {
-		if _, ok := node.children[letter]; !ok {
+	for _, char := range word {
+		if _, ok := node.children[char]; !ok {
 			newNode := newNode()
-			node.children[letter] = newNode
+			node.children[char] = newNode
 			node = newNode
 		} else {
-			childNode := node.children[letter]
+			childNode := node.children[char]
 			node = childNode
 		}
 	}
@@ -36,11 +32,11 @@ func (t *Node) Insert(word string) {
 }
 
 // GetWord returns word from specific Node.
-func (t *Node) GetWord() string {
+func (t *Node) GetWord() []rune {
 	return t.word
 }
 
 // GetChildren returns map of children from specific Node.
-func (t *Node) GetChildren() map[string]*Node {
+func (t *Node) GetChildren() map[rune]*Node {
 	return t.children
 }
