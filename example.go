@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"os"
+	"runtime/debug"
 	"strings"
 	"time"
 
@@ -16,6 +17,8 @@ import (
 )
 
 func main() {
+	// little hack to switch off Garbage Collector and win in performance
+	debug.SetGCPercent(-1)
 	start := time.Now()
 	vocabulary := trie.Init()
 	vocabularyFile, err := os.Open("vocabulary.txt")
