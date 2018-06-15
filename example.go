@@ -1,10 +1,9 @@
 package main
 
 import (
-	"bufio"
+	"bytes"
 	"os"
 	"runtime/debug"
-	"strings"
 	"time"
 
 	"errors"
@@ -21,38 +20,29 @@ func main() {
 	debug.SetGCPercent(-1)
 	start := time.Now()
 	vocabulary := trie.Init()
-	vocabularyFile, err := os.Open("vocabulary.txt")
-	defer vocabularyFile.Close()
+	vocabularyText, err := ioutil.ReadFile("vocabulary.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
-	scanner := bufio.NewScanner(vocabularyFile)
-	for scanner.Scan() {
-		vocabulary.Insert(scanner.Bytes())
-	}
-	if err := scanner.Err(); err != nil {
-		log.Println(err)
+	vocabularyWords := bytes.Split(vocabularyText, []byte{10})
+	for _, word := range vocabularyWords {
+		vocabulary.Insert(word)
 	}
 	if len(os.Args) < 2 {
 		log.Fatal(errors.New("get command line args: the system cannot find the command line arg for input data file name"))
 	}
 	inputFileName := os.Args[1]
-	textFile, err := os.Open(inputFileName)
-	defer textFile.Close()
+	text, err := ioutil.ReadFile(inputFileName)
 	if err != nil {
 		log.Fatal(err)
 	}
-	text, err := ioutil.ReadAll(textFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-	words := strings.Split(string(text), " ")
+	textWords := bytes.Split(text, []byte{32})
 	ch := make(chan int)
-	for _, word := range words {
-		go search.Distance(vocabulary, []byte(strings.ToUpper(word)), ch)
+	for _, word := range textWords {
+		go search.Distance(vocabulary, bytes.ToUpper(word), ch)
 	}
 	result := 0
-	for i := 0; i < len(words); i++ {
+	for i := 0; i < len(textWords); i++ {
 		result += <-ch
 	}
 	fmt.Println(result)
