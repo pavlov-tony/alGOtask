@@ -25,8 +25,8 @@ func Distance(node *trie.Node, word []byte, ch chan int) {
 func deepSearch(node *trie.Node, letter byte, word []byte, previousRow []int, results *result) {
 	// Preallocate slice with size of len(word) + 1.
 	// Add 1 to the capacity to avoid reallocation.
-	currentRow := make([]int, 0, len(word)+1)
-	currentRow = append(currentRow, previousRow[0]+1)
+	currentRow := make([]int, len(word)+1)
+	currentRow[0] = previousRow[0] + 1
 	cols := len(word) + 1
 	for i := 1; i < cols; i++ {
 		repCost := 0
@@ -37,7 +37,7 @@ func deepSearch(node *trie.Node, letter byte, word []byte, previousRow []int, re
 		}
 		delCost := previousRow[i] + 1
 		insCost := currentRow[i-1] + 1
-		currentRow = append(currentRow, min(insCost, delCost, repCost))
+		currentRow[i] = min(insCost, delCost, repCost)
 	}
 	currentRowDistance := currentRow[len(currentRow)-1]
 	maxChanges := results.distance
