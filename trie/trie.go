@@ -3,7 +3,7 @@ package trie
 // Node is an implementation of prefix tree.
 type Node struct {
 	word     []byte
-	children map[byte]*Node
+	children []*Node
 }
 
 // Init returns pointer to the new Node.
@@ -12,19 +12,19 @@ func Init() *Node {
 }
 
 func newNode() *Node {
-	return &Node{children: make(map[byte]*Node)}
+	return &Node{children: make([]*Node, 32)}
 }
 
 // Insert populates trie data structure with the new word.
 func (t *Node) Insert(word []byte) {
 	node := t
 	for _, char := range word {
-		if _, ok := node.children[char]; !ok {
+		if node.children[char-65] == nil {
 			newNode := newNode()
-			node.children[char] = newNode
+			node.children[char-65] = newNode
 			node = newNode
 		} else {
-			childNode := node.children[char]
+			childNode := node.children[char-65]
 			node = childNode
 		}
 	}
@@ -37,6 +37,6 @@ func (t *Node) GetWord() []byte {
 }
 
 // GetChildren returns map of children from specific Node.
-func (t *Node) GetChildren() map[byte]*Node {
+func (t *Node) GetChildren() []*Node {
 	return t.children
 }

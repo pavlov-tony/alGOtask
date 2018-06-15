@@ -14,8 +14,10 @@ func Distance(node *trie.Node, word []byte, ch chan int) {
 		currentRow[k] = k
 	}
 	results := &result{distance: len(word)}
-	for letter, node := range node.GetChildren() {
-		deepSearch(node, letter, word, currentRow, results)
+	for l, n := range node.GetChildren() {
+		if n != nil {
+			deepSearch(n, byte(l+65), word, currentRow, results)
+		}
 	}
 	ch <- results.distance
 }
@@ -46,7 +48,9 @@ func deepSearch(node *trie.Node, letter byte, word []byte, previousRow []int, re
 	}
 	if minIntElement(currentRow) <= maxChanges {
 		for l, n := range node.GetChildren() {
-			deepSearch(n, l, word, currentRow, results)
+			if n != nil {
+				deepSearch(n, byte(l+65), word, currentRow, results)
+			}
 		}
 	}
 }
