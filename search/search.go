@@ -1,11 +1,8 @@
 package search
 
-import "github.com/pavlov-tony/alGOtask/trie"
-
-type result struct {
-	word     string
-	distance int
-}
+import (
+	"github.com/pavlov-tony/alGOtask/trie"
+)
 
 // Distance returns the result of search in Trie.
 func Distance(node *trie.Node, word []byte, ch chan int) {
@@ -13,16 +10,16 @@ func Distance(node *trie.Node, word []byte, ch chan int) {
 	for k := range currentRow {
 		currentRow[k] = k
 	}
-	results := &result{distance: len(word)}
+	distance := len(word)
 	for l, n := range node.GetChildren() {
 		if n != nil {
-			deepSearch(n, byte(l+65), word, currentRow, results)
+			deepSearch(n, byte(l+65), word, currentRow, &distance)
 		}
 	}
-	ch <- results.distance
+	ch <- distance
 }
 
-func deepSearch(node *trie.Node, letter byte, word []byte, previousRow []int, results *result) {
+func deepSearch(node *trie.Node, letter byte, word []byte, previousRow []int, distance *int) {
 	// Preallocate slice with size of len(word) + 1.
 	// Add 1 to the capacity to avoid reallocation.
 	currentRow := make([]int, len(word)+1)
@@ -40,16 +37,16 @@ func deepSearch(node *trie.Node, letter byte, word []byte, previousRow []int, re
 		currentRow[i] = min(insCost, delCost, repCost)
 	}
 	currentRowDistance := currentRow[len(currentRow)-1]
-	maxChanges := results.distance
-	if currentRowDistance <= maxChanges && len(node.GetWord()) != 0 {
-		if currentRowDistance < results.distance {
-			results.distance = currentRowDistance
+	maxChanges := distance
+	if currentRowDistance <= *maxChanges && len(node.GetWord()) != 0 {
+		if currentRowDistance < *distance {
+			*distance = currentRowDistance
 		}
 	}
-	if minIntElement(currentRow) <= maxChanges {
+	if minIntElement(currentRow) <= *maxChanges {
 		for l, n := range node.GetChildren() {
 			if n != nil {
-				deepSearch(n, byte(l+65), word, currentRow, results)
+				deepSearch(n, byte(l+65), word, currentRow, distance)
 			}
 		}
 	}
