@@ -8,7 +8,7 @@ type result struct {
 }
 
 // Distance returns the result of search in Trie.
-func Distance(node *trie.Node, word []rune, ch chan int) {
+func Distance(node *trie.Node, word []byte, ch chan int) {
 	currentRow := make([]int, len(word)+1)
 	for k := range currentRow {
 		currentRow[k] = k
@@ -20,7 +20,7 @@ func Distance(node *trie.Node, word []rune, ch chan int) {
 	ch <- results.distance
 }
 
-func deepSearch(node *trie.Node, letter rune, word []rune, previousRow []int, results *result) {
+func deepSearch(node *trie.Node, letter byte, word []byte, previousRow []int, results *result) {
 	// Preallocate slice with size of len(word) + 1.
 	// Add 1 to the capacity to avoid reallocation.
 	currentRow := make([]int, 0, len(word)+1)
